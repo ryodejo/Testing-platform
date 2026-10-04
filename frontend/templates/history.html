@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}История попыток · Testing Platform{% endblock %}
+{% block content %}<div class="page-heading">
+<p class="eyebrow">Личный кабинет · {{ user.username }}</p>
+<h1>История попыток</h1>
+<p>Ваши результаты и разборы завершённых тестов.</p>
+</div>
+<div class="history-list">{% for result in page %}<article class="history-row">
+<div>
+<p class="subtle">{{ result.completed_at|date:'d.m.Y H:i' }}</p>
+<h2>
+<a href="{% url 'result' result.id %}">{{ result.title_snapshot }}</a>
+</h2>
+</div>
+<div class="history-score">{{ result.score }}{% if result.total != None %} / {{ result.total }}<span>{{ result.percentage }}%</span>{% else %}<span>Старый результат</span>{% endif %}</div>
+<a class="button secondary small" href="{% url 'result' result.id %}">Разбор →</a>
+</article>{% empty %}<div class="empty-state">
+<h2>Пока нет попыток</h2>
+<p>Пройдите первый тест — результат появится здесь.</p>
+<a class="button" href="{% url 'test_list' %}">Выбрать тест</a>
+</div>{% endfor %}</div>{% if page.has_other_pages %}<nav class="pagination" aria-label="Страницы истории">{% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">← Назад</a>{% endif %}<span>{{ page.number }} / {{ page.paginator.num_pages }}</span>{% if page.has_next %}<a href="?page={{ page.next_page_number }}">Далее →</a>{% endif %}</nav>{% endif %}
+{% endblock %}

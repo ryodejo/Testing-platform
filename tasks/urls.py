@@ -1,23 +1,4 @@
-from django.urls import path
-from .views import (
-    home,
-    register,
-    user_login,  # Добавьте этот импорт
-    user_logout,  # Добавьте этот импорт
-    start_test,
-    submit_test,
-    result,
-    test_list
-)
-
-urlpatterns = [
-    path("", home, name="home"),  # Главная страница
-    path("register/", register, name="register"),  # Регистрация
-    path("login/", user_login, name="login"),  # Вход (новый маршрут)
-    path("logout/", user_logout, name="user_logout"),  # Выход (новый маршрут)
-    path("tests/", test_list, name="test_list"),  # Список тестов
-    path("tests/<int:test_id>/", start_test, name="start_test"),  # Запуск теста
-    path("tests/<int:test_id>/submit/", submit_test, name="submit_test"),  # Отправка теста
-    path('tests/<int:test_id>/result/', result, name='result')
-    # Просмотр результата
-]
+from django.urls import path, reverse_lazy
+from django.contrib.auth import views as auth
+from . import views
+urlpatterns = [path('', views.home, name='home'), path('register/', views.register, name='register'), path('login/', auth.LoginView.as_view(template_name='login.html'), name='login'), path('logout/', auth.LogoutView.as_view(), name='user_logout'), path('tests/', views.test_list, name='test_list'), path('tests/<int:test_id>/', views.test_detail, name='test_detail'), path('tests/<int:test_id>/start/', views.start_test, name='start_test'), path('tests/<int:test_id>/submit/', views.submit_test, name='submit_test'), path('tests/<int:test_id>/result/', views.legacy_result, name='legacy_result'), path('attempts/<uuid:attempt_id>/', views.attempt, name='attempt'), path('results/<int:result_id>/', views.result, name='result'), path('history/', views.history, name='history'), path('password-reset/', auth.PasswordResetView.as_view(template_name='registration/password_reset_form.html', email_template_name='registration/password_reset_email.txt', subject_template_name='registration/password_reset_subject.txt', success_url=reverse_lazy('password_reset_done')), name='password_reset'), path('password-reset/sent/', auth.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'), path('reset/<uidb64>/<token>/', auth.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html', success_url=reverse_lazy('password_reset_complete')), name='password_reset_confirm'), path('reset/complete/', auth.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete')]

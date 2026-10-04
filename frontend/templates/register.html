@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация</title>
-</head>
-<body>
-    <h2>Регистрация</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}  <!-- Отображение формы -->
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-
-    <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>  <!-- Ссылка на страницу входа -->
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Регистрация · Testing Platform{% endblock %}
+{% block content %}<section class="auth-card">
+<p class="eyebrow">Личный аккаунт</p>
+<h1>Регистрация</h1>
+<p class="subtle">Сохраняйте результаты и возвращайтесь к разбору.</p>
+<form method="post">{% csrf_token %}
+{% include 'includes/fields.html' %}<button class="button full">Создать аккаунт</button>
+</form>
+<p class="auth-bottom">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+</p>
+</section>{% endblock %}

@@ -1,9 +1,1 @@
-{% if messages %}
-<div class="fixed top-20 right-4 z-50 max-w-xs w-full">
-    {% for message in messages %}
-    <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} p-4 mb-2 rounded-lg shadow-lg">
-        {{ message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+{% if messages %}<div class="messages" aria-live="polite">{% for message in messages %}<div class="notice {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}

@@ -1,0 +1,4 @@
+{% if form.non_field_errors %}<div class="notice error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% for field in form %}<div class="form-field">
+<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required" aria-label="обязательное поле"> *</span>{% endif %}</label>{{ field }}{% if field.errors %}<div id="{{ field.auto_id }}_error" class="field-errors" role="alert">{{ field.errors }}</div>{% endif %}
+{% if field.help_text %}<div id="{{ field.auto_id }}_helptext" class="help">{{ field.help_text|safe }}</div>{% endif %}</div>{% endfor %}

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}403 · Testing Platform{% endblock %}
+{% block content %}<section class='empty-state'>
+<p class='eyebrow'>Ошибка 403</p>
+<h1>Доступ ограничен</h1>
+<p>У вас нет разрешения на эту страницу.</p>
+<a class='button' href='{% url 'test_list' %}'>К каталогу</a>
+</section>{% endblock %}

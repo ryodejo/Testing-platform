@@ -1,67 +1,36 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
-<!-- Подключение кастомного CSS -->
-<link rel="stylesheet" href="{% static 'css/style_test.css' %}">
-
-<!-- Новый фиолетовый заголовок -->
-<div class="top-header">
-    <h1 class="text-4xl font-bold text-indigo-800">📚 Доступные тесты</h1>
+{% extends 'base.html' %}
+{% block title %}Каталог тестов · Testing Platform{% endblock %}
+{% block content %}<div class="page-heading">
+<p class="eyebrow">Практика</p>
+<h1>Каталог тестов</h1>
+<p>Выберите тему и проверьте свои знания.</p>
 </div>
-
-<!-- Основной фон -->
-<div class="page-bg">
-    {% if tests %}
-    <div class="cards-wrapper">
-        {% for test in tests %}
-        <div class="test-card">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ test.title }}</h2>
-
-                {% if test.description %}
-                <p class="text-gray-600 mb-4">{{ test.description }}</p>
-                {% endif %}
-
-                <div class="mb-4">
-                    <h3 class="font-medium text-gray-700 mb-2">Примеры вопросов:</h3>
-                    <ul class="space-y-1">
-                        {% for question in test.question_set.all|slice:":3" %}
-                        <li class="flex items-start">
-                            <span class="text-indigo-500 mr-2">•</span>
-                            <span class="text-gray-600">{{ question.text }}</span>
-                        </li>
-                        {% empty %}
-                        <li class="text-gray-400">Вопросы пока не добавлены</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <a href="{% url 'start_test' test.id %}"
-                   class="start-test-btn">
-                    🚀 Начать тест
-                </a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="text-center bg-white p-8 rounded-xl shadow mt-12 max-w-xl mx-auto">
-        <div class="text-gray-500 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </div>
-        <p class="text-lg font-medium text-gray-600 mb-4">Тесты пока не доступны</p>
-
-        {% if user.is_staff %}
-        <a href="/admin/tasks/test/add/"
-           class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
-            ➕ Добавить тест (Админ)
-        </a>
-        {% endif %}
-    </div>
-    {% endif %}
+<form method="get" class="filters">
+<div class="form-field">
+<label for="search">Поиск по названию</label>
+<input id="search" type="search" name="q" value="{{ search }}" placeholder="Например, Python" maxlength="255">
 </div>
-{% endblock %}
+<div class="form-field">
+<label for="topic">Тема</label>
+<select id="topic" name="topic">
+<option value="">Все темы</option>{% for key,label in topics %}<option value="{{ key }}" {% if selected_topic == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+</div>
+<button class="button">Найти</button>
+<a class="reset-link" href="{% url 'test_list' %}">Сбросить</a>
+</form>
+<div class="catalog-grid">{% for test in tests %}<article class="test-card">
+<div class="card-meta">
+<span class="tag">{{ test.get_topic_display }}</span>
+<span>{{ test.get_difficulty_display }}</span>
+</div>
+<h2>
+<a href="{% url 'test_detail' test.id %}">{{ test.title }}</a>
+</h2>
+<p>{{ test.description|default:'Описание пока не добавлено.'|truncatechars:160 }}</p>
+<div class="card-bottom">
+<span>{{ test.question_count }} вопросов</span>
+<a class="button secondary small" href="{% url 'test_detail' test.id %}">Подробнее →</a>
+</div>
+</article>{% empty %}<div class="empty-state">
+<h2>Тесты не найдены</h2>
+<p>{% if search or selected_topic %}Попробуйте другой запрос или сбросьте фильтры.{% else %}Опубликованные тесты появятся здесь. Демонстрационные материалы добавляет администратор.{% endif %}</p>{% if search or selected_topic %}<a class="button secondary" href="{% url 'test_list' %}">Сбросить фильтры</a>{% endif %}</div>{% endfor %}</div>{% endblock %}

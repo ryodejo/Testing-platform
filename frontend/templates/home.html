@@ -1,8 +1,66 @@
-{% extends "base.html" %}
-{% block title %}Home{% endblock %}
-{% block content %}
-<section id="home">
-    <h2>The Future of Technology — Today</h2>
-    <p>We create digital solutions for businesses</p>
+{% extends 'base.html' %}
+{% block title %}Testing Platform · Практика знаний{% endblock %}
+{% block content %}<section class="hero">
+<div>
+<p class="eyebrow">Учебная платформа</p>
+<h1>Проверьте знания.<br>Разберите ошибки.</h1>
+<p class="lead">Короткие тесты по программированию, базам данных и тестированию. Ответьте на вопросы, получите результат и вернитесь к темам, которые требуют практики.</p>
+<div class="actions">
+<a class="button" href="{% url 'test_list' %}">Перейти к тестам →</a>{% if not user.is_authenticated %}<a class="button secondary" href="{% url 'register' %}">Создать аккаунт</a>{% endif %}</div>
+<p class="subtle">Демонстрационные материалы для самостоятельного обучения.</p>
+</div>
+<aside class="hero-panel">
+<p class="eyebrow">Как это работает</p>
+<ol class="steps">
+<li>
+<span>01</span>
+<div>
+<h3>Выберите тему</h3>
+<p>Посмотрите описание теста и количество вопросов.</p>
+</div>
+</li>
+<li>
+<span>02</span>
+<div>
+<h3>Ответьте в своём темпе</h3>
+<p>Меняйте ответы до отправки. Время носит рекомендательный характер.</p>
+</div>
+</li>
+<li>
+<span>03</span>
+<div>
+<h3>Изучите результат</h3>
+<p>Сравните ответы с правильными и прочитайте объяснения.</p>
+</div>
+</li>
+</ol>
+</aside>
 </section>
-{% endblock %}
+<section class="section">
+<div class="section-heading">
+<h2>Основы для IT-практики</h2>
+<a href="{% url 'test_list' %}">Все тесты →</a>
+</div>
+<div class="topic-grid">
+<a class="topic-card" href="{% url 'test_list' %}?topic=python">
+<span class="eyebrow">Программирование</span>
+<h3>Python</h3>
+<p>Типы данных, выражения и обработка ошибок.</p>
+</a>
+<a class="topic-card" href="{% url 'test_list' %}?topic=sql">
+<span class="eyebrow">Базы данных</span>
+<h3>SQL</h3>
+<p>Запросы, фильтрация и работа с NULL.</p>
+</a>
+<a class="topic-card" href="{% url 'test_list' %}?topic=web">
+<span class="eyebrow">Веб</span>
+<h3>HTTP</h3>
+<p>Методы, статусы и безопасность запросов.</p>
+</a>
+<a class="topic-card" href="{% url 'test_list' %}?topic=testing">
+<span class="eyebrow">Качество ПО</span>
+<h3>Тестирование</h3>
+<p>Сценарии, границы и воспроизводимость.</p>
+</a>
+</div>
+</section>{% endblock %}

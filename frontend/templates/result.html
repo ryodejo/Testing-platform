@@ -1,13 +1,35 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="max-w-md mx-auto py-12 text-center">
-    <h2 class="text-3xl font-bold mb-6">Результаты теста: {{ test.title }}</h2>
-
-    <p class="text-xl mb-4">Ваш результат: <strong>{{ test_result.score }}</strong> из <strong>{{ test_result.test.question_set.count }}</strong></p>
-
-    <p class="mb-6">Дата прохождения: {{ test_result.completed_at|date:"d.m.Y H:i" }}</p>
-
-    <a href="{% url 'test_list' %}" class="inline-block bg-indigo-600 text-white py-2 px-6 rounded hover:bg-indigo-700 transition">Вернуться к списку тестов</a>
+{% extends 'base.html' %}
+{% block title %}Результат · {{ result.title_snapshot }}{% endblock %}
+{% block content %}<a class="back-link" href="{% url 'history' %}">← История попыток</a>
+<div class="page-heading">
+<p class="eyebrow">Тест завершён · {{ result.completed_at|date:'d.m.Y H:i' }}</p>
+<h1>{{ result.title_snapshot }}</h1>
 </div>
+<section class="result-summary">
+<div>
+<p class="eyebrow">Ваш результат</p>
+<p class="score">{{ result.score }}{% if result.total != None %}<span> / {{ result.total }}</span>{% endif %}</p>
+</div>
+<div>
+<h2>{{ result.verdict }}</h2>{% if result.total != None %}<p>{{ result.percentage }}% правильных ответов. Разберите вопросы ниже и попробуйте снова.</p>{% else %}<p>Старый результат: число вопросов и выбранные ответы не сохранялись. Процент восстановить достоверно нельзя.</p>{% endif %}</div>
+</section>
+<div class="actions">{% if result.test and result.test.is_active %}<form method="post" action="{% url 'start_test' result.test.id %}">{% csrf_token %}<button class="button">Пройти ещё раз</button>
+</form>{% endif %}<a class="button secondary" href="{% url 'test_list' %}">К каталогу</a>
+</div>{% if result.responses.all %}<h2 class="section">Разбор ответов</h2>{% for response in result.responses.all %}<article class="review-card">
+<div class="review-heading">
+<span class="tag {% if response.is_correct %}correct{% else %}incorrect{% endif %}">{% if response.is_correct %}Верно{% else %}Неверно{% endif %}</span>
+<span>Вопрос {{ forloop.counter }}</span>
+</div>
+<h3>{{ response.question_text }}</h3>
+<dl>
+<div>
+<dt>Ваш ответ</dt>
+<dd>{{ response.selected_text|default:'Ответ не выбран' }}</dd>
+</div>
+<div>
+<dt>Правильный ответ</dt>
+<dd>{{ response.correct_text }}</dd>
+</div>
+</dl>{% if response.explanation %}<p class="explanation">{{ response.explanation }}</p>{% endif %}</article>{% endfor %}
+{% endif %}
 {% endblock %}

@@ -1,47 +1,20 @@
-// Открытие и закрытие модального окна теста
-function openModal() {
-  document.getElementById("modal").classList.remove("hidden");
-}
-function closeModal() {
-  document.getElementById("modal").classList.add("hidden");
-}
-
-// Открытие и закрытие логина
-function openLoginModal() {
-  document.getElementById("loginModal").classList.remove("hidden");
-}
-function closeLoginModal() {
-  document.getElementById("loginModal").classList.add("hidden");
-}
-
-// Открытие и закрытие регистрации
-function openSignUpModal() {
-  document.getElementById("signUpModal").classList.remove("hidden");
-}
-function closeSignUpModal() {
-  document.getElementById("signUpModal").classList.add("hidden");
-}
-
-// Проверка логина (пока просто заглушка, Django это делает сам)
-let isLoggedIn = false;
-
-// Основная логика — обработка кнопок "Take Test"
-document.addEventListener("DOMContentLoaded", function () {
-  const takeTestButtons = document.querySelectorAll(".take-test");
-
-  takeTestButtons.forEach(button => {
-    button.addEventListener("click", function (event) {
-      if (!isLoggedIn) {
-        event.preventDefault();
-
-        // Установка поля next в форме логина
-        const nextInput = document.getElementById("login-next");
-        if (nextInput) {
-          nextInput.value = this.getAttribute("href"); // путь к тесту
-        }
-
-        openLoginModal(); // Показываем модалку логина
-      }
-    });
+"use strict";
+const form = document.getElementById("test-form");
+if (form) {
+  const groups = [...form.querySelectorAll("fieldset")];
+  const update = () => {
+    const count = groups.filter(group => group.querySelector("input:checked")).length;
+    document.getElementById("answered-count").textContent = count;
+    document.getElementById("answer-progress").value = count;
+    document.getElementById("missing-warning").textContent = count === groups.length ? "Все вопросы заполнены." : `Пропущено вопросов: ${groups.length - count}.`;
+  };
+  form.addEventListener("change", update); update();
+  form.addEventListener("submit", event => {
+    const missing = groups.some(group => !group.querySelector("input:checked"));
+    if (missing && !form.querySelector("[name=confirm_missing]").checked) {
+      event.preventDefault(); document.getElementById("missing-warning").textContent = "Есть пропуски. Выберите ответы или отметьте разрешение отправки с пропусками.";
+      groups.find(group => !group.querySelector("input:checked")).querySelector("input").focus();
+    } else { form.querySelector("button[type=submit]").disabled = true; }
   });
-});
+  window.addEventListener("pageshow", () => { form.querySelector("button[type=submit]").disabled = false; update(); });
+}

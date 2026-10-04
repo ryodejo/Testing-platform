@@ -1,29 +1,26 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="max-w-4xl mx-auto py-12">
-    <h2 class="text-4xl font-bold text-center mb-8 text-indigo-800">{{ test.title }}</h2>
-
-    <form method="POST" action="{% url 'submit_test' test.id %}" class="bg-white p-8 rounded-lg shadow-lg">
-        {% csrf_token %}
-
-        {% for question in questions %}
-            <div class="mb-8 p-6 border border-indigo-300 rounded-lg bg-indigo-50 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <p class="text-xl font-semibold text-indigo-900 mb-4">{{ forloop.counter }}. {{ question.text }}</p>
-                <div class="space-y-4">
-                    {% for answer in question.answers.all %}
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" class="accent-indigo-600 w-5 h-5" required>
-                            <span class="ml-3 text-indigo-800 hover:text-indigo-600">{{ answer.text }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
-
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition duration-300">
-            Submit Test
-        </button>
-    </form>
+{% extends 'base.html' %}
+{% block title %}Прохождение · {{ test.title }}{% endblock %}
+{% block content %}<div class="page-heading">
+<p class="eyebrow">Прохождение теста</p>
+<h1>{{ test.title }}</h1>
+<p>Выберите один вариант в каждом вопросе. Ответы сохраняются только после отправки.</p>
+</div>{% if error %}<div class="notice error" role="alert">{{ error }}</div>{% endif %}<form method="post" action="{% url 'submit_test' test.id %}" id="test-form" class="attempt-form">{% csrf_token %}<input type="hidden" name="attempt_id" value="{{ draft.id }}">
+<div class="progress-panel">
+<label for="answer-progress" id="progress-label">Заполнено вопросов: <span id="answered-count">0</span> из {{ questions|length }}</label>
+<progress id="answer-progress" value="0" max="{{ questions|length }}">
+</progress>
+<noscript>
+<p class="help">Вы можете пройти тест без JavaScript. Сервер предупредит о пропусках перед сохранением.</p>
+</noscript>
+</div>{% for question in questions %}<fieldset class="question-card">
+<legend>
+<span class="question-number">{{ forloop.counter|stringformat:'02d' }}</span>{{ question.text }}</legend>{% for answer in question.answers %}<label class="answer-option">
+<input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" {% if answer.selected %}checked{% endif %}>
+<span>{{ answer.text }}</span>
+</label>{% endfor %}</fieldset>{% endfor %}<div class="submit-panel">
+<label class="checkbox">
+<input type="checkbox" name="confirm_missing" value="yes">Разрешить отправку с пропусками (за них — 0 баллов)</label>
+<p class="help" id="missing-warning" aria-live="polite">Перед отправкой проверьте ответы.</p>
+<button class="button" type="submit">Завершить тест →</button>
 </div>
-{% endblock %}
+</form>{% endblock %}
